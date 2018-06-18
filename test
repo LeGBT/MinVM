@@ -1,0 +1,3 @@
+00: MOV BX 5
+    ADD AX BX 2
+    RET AX
