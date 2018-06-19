@@ -95,26 +95,24 @@ int main(int argc, char **argv){
     uint64_t c=0;  // char number c
     uint64_t i=0;  // instruction number i
     uint8_t t; // token char
-    uint64_t litteral; // litteral 64bit int
-    if(src[0] != 'N' || src[1] != 'O' || src[2] != 'P'){
-        puts("Start symbol not found.");
-    }
-
+    uint64_t litteral; // litteral 64bit uint
     while(src[c]){
         litteral = 0;
+        t=0;
+        char token[5] = {0};
+
+        uint8_t isNumber = 0;
         while(src[c]>47 && src[c]<58){
-            printf("%u\t", src[c]);
+            isNumber++;
             litteral *= 10;
             litteral += src[c]-48;
             c++;
         }
-        if (litteral){
+        if (isNumber){
+            bytecode[i] = litteral;
             i++;
             //printf("Litteral %llu at %llu\n", litteral, c);
         }
-        t=0;
-        char token[4] = {0};
-        printf("start char= (%c)", src[c]);
         while(src[c+t] != ' ' && c+t<r && src[c+t] != '\n' && t<4){
             token[t] = (char)src[c+t];
             t++;
@@ -145,6 +143,7 @@ int main(int argc, char **argv){
             case 0:     ; break;
             default: printf("Instruction (%c%c%c%c) non gérée avec hash(%u)\n", token[0], token[1], token[2], token[3], h(token));
         }
+        if (token[4]){printf("error token[4]=%u\n", token[4]);}
     }
 
 

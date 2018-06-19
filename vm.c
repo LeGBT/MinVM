@@ -81,15 +81,21 @@ int main(int argc, char **argv){
                        // 0:   OK
                        // 1:   Bad register address
                        // 2:   Unknown instruction
-                       // 100: Debug
+                       // 3:   Maximum reccursion
+    int8_t debug = 0; // debug mode
+    int32_t instruction_count = 0;
+
+            printf("(%d) [%llu, %llu, %llu, %llu]\n", instruction_count, reg[RA], reg[RB], reg[RC], reg[RD]);
+
     while(exit<0){
+        instruction_count++;
         if (pp > POOLSIZE-2){puts("Segfault"); return 1;}
         if (sp > POOLSIZE-2){puts("Stack overflow."); return 1;} // on a atteind le bout
 
         switch (text[pp]){
             case NOP:  pp++;                                        break;
             case EXIT: exit = 0;                                    break;
-            case DEBG: exit = 100;                                  break;
+            case DEBG: pp++;debug = !debug;                         break;
             case JMP:  pp++; pp = rx;                               break;
             case JZ:   if(reg[RD]==0){pp=text[pp+1];}else{pp+=2;}   break;
             case JNZ:  if(reg[RD]!=0){pp=text[pp+1];}else{pp+=2;}   break;
@@ -108,16 +114,15 @@ int main(int argc, char **argv){
             case MUL:  pp++; rx *= rxn; pp+=2;                      break;
             default: exit = 2;
         }
-
+        if (debug){
+            printf("(%d) [%llu, %llu, %llu, %llu]\n", instruction_count, reg[RA], reg[RB], reg[RC], reg[RD]);
+        }
+        if (instruction_count > 100) exit = 3;
     }
 
-    if (exit % 100 == 0){
+    if (exit == 0){
         for(;sp>0;sp--){
-            printf("%llu\n", stack[sp]);
-        }
-        if (exit == 100){
-            printf("%llu\t%llu\t%llu\t%llu\n", reg[RA], reg[RB],
-                    reg[RC], reg[RD]);
+            printf("%llu\n", reg[RA]);
         }
     }else if (exit == 1){
         printf("Bad register address at %u\n", pp);
