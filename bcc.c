@@ -1,8 +1,29 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "vm.h"
+
+#define HNOP    10627
+#define HEXIT   50638
+#define HJMP    7657
+#define HJZ     296
+#define HJNZ    7694
+#define HPUSH   3078
+#define HPOP    12085
+#define HLOAD   50554
+#define HMOV    9904
+#define HINC    6942
+#define HDEC    3054
+#define HCALL   60114
+#define HPUTC   3100
+#define HDEBG   16902
+#define HADD    841
+#define HSUB    14420
+#define HMUL    10056
+#define HRA     487
+#define HRB     488
+#define HRC     489
+#define HRD     490
 
 
 const uint16_t FILESIZE = 1024;
@@ -25,7 +46,7 @@ uint16_t h(char* string){
 
 int main(int argc, char **argv){
     if (argc != 2){
-        printf("Need a filename to compile.\n");
+        printf("Need a single filename to compile.\n");
         return 1;
     }
 
@@ -56,7 +77,6 @@ int main(int argc, char **argv){
     }
     fclose(fp);
     src[r] = 0; // EOF
-    printf("%s", src);
 
     uint8_t size;
     for(size=0;filename[size];size++); // taille de filename
@@ -70,24 +90,71 @@ int main(int argc, char **argv){
 
     FILE *pf = fopen(out, "w");
 
-    uint8_t test[FILESIZE] = { LOAD, RD, 25,
-                               LOAD, RA, 0,
-                               LOAD, RB, 1,
-                               MOV, RC, RA,
-                               ADD, RA, RB,
-                               MOV, RB, RC,
-                               DEC, RD,
-                               PUSH, RA,
-                               JNZ, 9,
-                               RET};
-    size = fwrite(test, sizeof(uint8_t), 32, pf);
+    uint8_t bytecode[FILESIZE];
+
+    uint64_t c=0;  // char number c
+    uint64_t i=0;  // instruction number i
+    uint8_t t; // token char
+    uint64_t litteral; // litteral 64bit int
+    if(src[0] != 'N' || src[1] != 'O' || src[2] != 'P'){
+        puts("Start symbol not found.");
+    }
+
+    while(src[c]){
+        litteral = 0;
+        while(src[c]>47 && src[c]<58){
+            printf("%u\t", src[c]);
+            litteral *= 10;
+            litteral += src[c]-48;
+            c++;
+        }
+        if (litteral){
+            i++;
+            //printf("Litteral %llu at %llu\n", litteral, c);
+        }
+        t=0;
+        char token[4] = {0};
+        printf("start char= (%c)", src[c]);
+        while(src[c+t] != ' ' && c+t<r && src[c+t] != '\n' && t<4){
+            token[t] = (char)src[c+t];
+            t++;
+        }
+        c += t+1;
+        switch (h(token)){
+            case HNOP:  bytecode[i]=NOP;    i++;break;
+            case HEXIT: bytecode[i]=EXIT;   i++;break;
+            case HJMP:  bytecode[i]=JMP;    i++;break;
+            case HJZ:   bytecode[i]=JZ;     i++;break;
+            case HJNZ:  bytecode[i]=JNZ;    i++;break;
+            case HPUSH: bytecode[i]=PUSH;   i++;break;
+            case HPOP:  bytecode[i]=POP;    i++;break;
+            case HLOAD: bytecode[i]=LOAD;   i++;break;
+            case HMOV:  bytecode[i]=MOV;    i++;break;
+            case HINC:  bytecode[i]=INC;    i++;break;
+            case HDEC:  bytecode[i]=DEC;    i++;break;
+            case HCALL: bytecode[i]=CALL;   i++;break;
+            case HPUTC: bytecode[i]=PUTC;   i++;break;
+            case HDEBG: bytecode[i]=DEBG;   i++;break;
+            case HADD:  bytecode[i]=ADD;    i++;break;
+            case HSUB:  bytecode[i]=SUB;    i++;break;
+            case HMUL:  bytecode[i]=MUL;    i++;break;
+            case HRA:   bytecode[i]=RA;     i++;break;
+            case HRB:   bytecode[i]=RB;     i++;break;
+            case HRC:   bytecode[i]=RC;     i++;break;
+            case HRD:   bytecode[i]=RD;     i++;break;
+            case 0:     ; break;
+            default: printf("Instruction (%c%c%c%c) non gérée avec hash(%u)\n", token[0], token[1], token[2], token[3], h(token));
+        }
+    }
+
+
+    size = fwrite(bytecode, sizeof(uint8_t), 32, pf);
     if (size != 32){
         puts("***");
         printf("***Error while writing to %s***\n", out);
         puts("***");
     }
     fclose(pf);
-
 
 
     //clean
