@@ -85,8 +85,6 @@ int main(int argc, char **argv){
     int8_t debug = 0; // debug mode
     int32_t instruction_count = 0;
 
-            printf("(%d) [%llu, %llu, %llu, %llu]\n", instruction_count, reg[RA], reg[RB], reg[RC], reg[RD]);
-
     while(exit<0){
         instruction_count++;
         if (pp > POOLSIZE-2){puts("Segfault"); return 1;}
@@ -96,7 +94,7 @@ int main(int argc, char **argv){
             case NOP:  pp++;                                        break;
             case EXIT: exit = 0;                                    break;
             case DEBG: pp++;debug = !debug;                         break;
-            case JMP:  pp++; pp = rx;                               break;
+            case JMP:  pp = text[pp+1];                             break;
             case JZ:   if(reg[RD]==0){pp=text[pp+1];}else{pp+=2;}   break;
             case JNZ:  if(reg[RD]!=0){pp=text[pp+1];}else{pp+=2;}   break;
             case PUSH: pp++; sp++; stack[sp] = rx; pp++;            break;
@@ -115,19 +113,19 @@ int main(int argc, char **argv){
             default: exit = 2;
         }
         if (debug){
-            printf("(%d) [%llu, %llu, %llu, %llu]\n", instruction_count, reg[RA], reg[RB], reg[RC], reg[RD]);
+            printf("(%d, %u) [%llu, %llu, %llu, %llu]\n", instruction_count, pp, reg[RA], reg[RB], reg[RC], reg[RD]);
         }
-        if (instruction_count > 100) exit = 3;
+        if (instruction_count > 60) exit = 3;
     }
 
     if (exit == 0){
-        for(;sp>0;sp--){
-            printf("%llu\n", reg[RA]);
-        }
+        if(reg[RA]) printf("%llu\n", reg[RA]);
     }else if (exit == 1){
         printf("Bad register address at %u\n", pp);
     }else if (exit == 2){
-        printf("Unknown instruction %u\n", text[pp]);
+        printf("Unknown instruction %#x at %u\n", text[pp], pp);
+    }else if (exit == 3){
+        printf("Too much reccursion, probably infinite loop.\n");
     }
 
 

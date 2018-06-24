@@ -5,6 +5,7 @@
 
 #define HNOP    10627
 #define HEXIT   50638
+#define HLABL   40383
 #define HJMP    7657
 #define HJZ     296
 #define HJNZ    7694
@@ -53,6 +54,12 @@ int main(int argc, char **argv){
     argc--;
     argv++;
     filename = argv[0];
+    uint8_t filename_size = 0;
+    for(;filename[filename_size];filename_size++);
+    if (filename[filename_size-1]!='r' || filename[filename_size-2]!='i' ||
+        filename[filename_size-3]!='.'){
+        printf("Need a .ir file.\n");
+    }
     FILE *fp = fopen(filename, "r");
     if (!fp){
         puts("***");
@@ -78,10 +85,9 @@ int main(int argc, char **argv){
     fclose(fp);
     src[r] = 0; // EOF
 
+    char* out = calloc(filename_size, sizeof(char));
     uint8_t size;
-    for(size=0;filename[size];size++); // taille de filename
-    char out[size+3];
-    for(size=0;filename[size];size++){ // on copie filename
+    for(size=0;size<filename_size-3;size++){ // on copie filename
         out[size] = filename[size];
     }
     out[size] = '.';                  // on rajoute .bc
@@ -96,6 +102,8 @@ int main(int argc, char **argv){
     uint64_t i=0;  // instruction number i
     uint8_t t; // token char
     uint64_t litteral; // litteral 64bit uint
+    uint8_t labels[64] = {0};
+    uint8_t label_count = 0;
     while(src[c]){
         litteral = 0;
         t=0;
@@ -119,6 +127,7 @@ int main(int argc, char **argv){
         }
         c += t+1;
         switch (h(token)){
+            case HLABL: labels[label_count] = i;label_count++;break;
             case HNOP:  bytecode[i]=NOP;    i++;break;
             case HEXIT: bytecode[i]=EXIT;   i++;break;
             case HJMP:  bytecode[i]=JMP;    i++;break;
@@ -146,9 +155,24 @@ int main(int argc, char **argv){
         if (token[4]){printf("error token[4]=%u\n", token[4]);}
     }
 
+    for (uint8_t t=0; t<label_count;t++){
+        printf("label(%u)=%u\n", t, labels[t]);
+    }
 
-    size = fwrite(bytecode, sizeof(uint8_t), 32, pf);
-    if (size != 32){
+    // label second pass
+    for (uint64_t j=0; j<i; j++){
+        if (bytecode[j]==JMP || bytecode[j]==JZ || bytecode[j]==JNZ){
+            if (bytecode[j+1]>=label_count){
+                printf("Unknown label %u at (%llu)\n", bytecode[j+1], j);
+            }else{
+                bytecode[j+1]=labels[bytecode[j+1]];
+                j++;
+            }
+        }
+    }
+    printf("%llu instructions\n", i);
+    size = fwrite(bytecode, sizeof(uint8_t), i, pf);
+    if (size != i){
         puts("***");
         printf("***Error while writing to %s***\n", out);
         puts("***");
@@ -158,5 +182,6 @@ int main(int argc, char **argv){
 
     //clean
     free(src);
+    free(out);
     return 0;
 }
