@@ -20,8 +20,8 @@
 #define MUL     0x42  // MUL RA RB      RA = RA * RB
 
 #define NOP     0x80  // NOP;           do nothing
-#define RA  0x00
-#define RB  0x01
-#define RC  0x02
-#define RD  0x03
+#define RA      0x00
+#define RB      0x01
+#define RC      0x02
+#define RD      0x03
 

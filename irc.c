@@ -155,10 +155,6 @@ int main(int argc, char **argv){
         if (token[4]){printf("error token[4]=%u\n", token[4]);}
     }
 
-    for (uint8_t t=0; t<label_count;t++){
-        printf("label(%u)=%u\n", t, labels[t]);
-    }
-
     // label second pass
     for (uint64_t j=0; j<i; j++){
         if (bytecode[j]==JMP || bytecode[j]==JZ || bytecode[j]==JNZ){
@@ -170,7 +166,6 @@ int main(int argc, char **argv){
             }
         }
     }
-    printf("%llu instructions\n", i);
     size = fwrite(bytecode, sizeof(uint8_t), i, pf);
     if (size != i){
         puts("***");

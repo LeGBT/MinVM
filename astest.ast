@@ -1,0 +1,3 @@
+(define (carre x) (* x x))
+(define t (* 10 (+ 3 4)))
+(carre t)
