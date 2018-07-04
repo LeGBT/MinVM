@@ -1,15 +1,18 @@
 .PHONY: clean test
-
-default: vm irc astc
+warnings = -Weverything -Werror
+default: vm irc astc parser
 
 vm: vm.c
-	clang -O3 -Wall -o vm vm.c
+	clang -O3 $(warnings) -o vm vm.c
 
 irc: irc.c
-	clang -O3 -Wall -o irc irc.c
+	clang -O3 $(warnings) -o irc irc.c
 
 astc: astc.c
-	clang -O3 -Wall -o astc astc.c
+	clang -O3 $(warnings) -o astc astc.c
+
+parser: parser.c
+	clang -O3 $(warnings) -o parser parser.c
 
 
 test0.bc: test0.ir irc
@@ -20,4 +23,4 @@ test: vm test0.bc
 
 
 clean:
-	rm -f irc astc vm test0.bc
+	rm -f parser irc astc vm test0.bc

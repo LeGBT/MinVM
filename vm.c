@@ -17,20 +17,18 @@
  *  +------------------+
  */
 
-uint8_t *text;
-uint64_t *data;
-uint64_t *stack;
-
-const uint16_t  POOLSIZE = 255;
-uint8_t pp, dp, sp;
-uint64_t *reg;  // registers
-
-const char* filename;
-char* src;
 
 
 int main(int argc, char **argv){
+    uint8_t *text;
+    uint64_t *data;
+    uint64_t *stack;
 
+    const uint16_t  POOLSIZE = 255;
+    uint8_t pp, dp, sp;
+    uint64_t *reg;  // registers
+
+    const char* filename;
 
 
     //              Allocating VM mem
@@ -66,7 +64,6 @@ int main(int argc, char **argv){
     fclose(fp);
     if(r == POOLSIZE-4){
         printf("***ERROR MAXIMUM FILESIZE***\n");
-        free(src);
         return 1;
     }
 
@@ -130,7 +127,6 @@ int main(int argc, char **argv){
 
 
     //              Clean
-    free(src);
     free(text);
     free(data);
     free(stack);
