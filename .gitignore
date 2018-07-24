@@ -3,3 +3,4 @@ irc
 astc
 *.bc
 parser
+__*
