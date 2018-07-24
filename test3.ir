@@ -1,0 +1,21 @@
+init:   PUSH 93
+        STORE i
+        POP
+start:  PUSH 1
+        STORE a
+        PUSH 0
+        JUMP loop
+loop:   ADD
+        STORE b
+        LOAD a
+        LOAD b
+        STORE a
+        POP
+        LOAD i
+        DEC
+        STORE i
+        PUSH 0
+        EQ
+        JIF out
+        JUMP loop
+out:    EXIT

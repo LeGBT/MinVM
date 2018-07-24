@@ -26,10 +26,10 @@
 #define HRC     489
 #define HRD     490
 
+#define FILESIZE  1024
 
-const uint16_t FILESIZE = 1024;
-const char* filename;
-char* src;
+
+uint16_t h(char* string);
 
 uint16_t h(char* string){
     uint16_t h = 0;
@@ -37,7 +37,7 @@ uint16_t h(char* string){
     uint8_t ch;
     for(c=0;string[c]; c++){
         //string[c] = (string[c] == 32) ? 64 : string[c];
-        ch = (string[c] == 32) ? 64 : string[c];
+        ch = (string[c] == 32) ? 64 : (uint8_t)string[c];
         h *= 27;
         h += ch - 64;
     }
@@ -46,6 +46,9 @@ uint16_t h(char* string){
 
 
 int main(int argc, char **argv){
+    const char* filename;
+    char* src;
+
     if (argc != 2){
         printf("Need a single filename to compile.\n");
         return 1;
@@ -86,7 +89,7 @@ int main(int argc, char **argv){
     src[r] = 0; // EOF
 
     char* out = calloc(filename_size, sizeof(char));
-    uint8_t size;
+    size_t size;
     for(size=0;size<filename_size-3;size++){ // on copie filename
         out[size] = filename[size];
     }
@@ -113,11 +116,11 @@ int main(int argc, char **argv){
         while(src[c]>47 && src[c]<58){
             isNumber++;
             litteral *= 10;
-            litteral += src[c]-48;
+            litteral += (uint64_t)(src[c]-48);
             c++;
         }
         if (isNumber){
-            bytecode[i] = litteral;
+            bytecode[i] = (uint8_t)litteral; //TODO pour l'instant seulement 1octet par octet.
             i++;
             //printf("Litteral %llu at %llu\n", litteral, c);
         }
@@ -127,7 +130,7 @@ int main(int argc, char **argv){
         }
         c += t+1;
         switch (h(token)){
-            case HLABL: labels[label_count] = i;label_count++;break;
+            case HLABL: labels[label_count] = (uint8_t)i;label_count++;break;
             case HNOP:  bytecode[i]=NOP;    i++;break;
             case HEXIT: bytecode[i]=EXIT;   i++;break;
             case HJMP:  bytecode[i]=JMP;    i++;break;
@@ -172,10 +175,9 @@ int main(int argc, char **argv){
         printf("***Error while writing to %s***\n", out);
         puts("***");
     }
-    fclose(pf);
-
 
     //clean
+    fclose(pf);
     free(src);
     free(out);
     return 0;
