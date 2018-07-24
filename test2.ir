@@ -1,0 +1,18 @@
+        PUSH 5
+        STORE i
+        PUSH 0
+        PUSH 1
+fibon:  LOAD i
+        PUSH 0
+        EQ
+        JIF stopfib
+        LOAD i
+        DEC
+        STORE i
+        STORE a
+        ADD
+        STORE b
+        LOAD a
+        LOAD b
+        JUMP fibon
+stopfib:EXIT

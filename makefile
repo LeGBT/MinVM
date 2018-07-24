@@ -2,8 +2,11 @@
 warnings = -Weverything -Werror
 default: vm irc astc parser
 
-vm: vm.c
-	clang -O3 $(warnings) -o vm vm.c
+oldvm: vm.c
+	clang -O3 $(warnings) -o oldvm vm.c
+
+vm: vm2.c
+	clang -O3 $(warnings) -o vm vm2.c
 
 irc: irc.c
 	clang -O3 $(warnings) -o irc irc.c
