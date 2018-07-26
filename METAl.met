@@ -1,12 +1,12 @@
-S= T : 1;
-T= T"+"T : 1 2 "+";
-T= F : 1;
-F= F "*" F : 1 2 "*";
-F= G : 1;
-G= n : 1;
-G= "(" T ")" : 1;
+OUT: METAl.py;
 
-
-S= id "=" E ":" E   :   2
-E=
+P = "OUT:" FN ";" E  >> WRITE(E, FN);
+LS = L LS;
+L = id "=" TR >> TABLE(id, TR);
+TR = EX >> EX, EX;
+TR = EXI ">>" EXO >> EXI, EXO;
+EXI = EX;
+EXO = EX
+EX = string EX;
+EX = id EX;
 

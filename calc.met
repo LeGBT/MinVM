@@ -1,0 +1,16 @@
+OUT: calc.cal
+
+S = T;
+T = T1"+"T2 >> T1 T2 "+";
+T = F;
+T1 = T;
+T2 = T;
+
+F = F1 "*" F2 >> F1 F2 "*";
+F = G;
+F1 = F;
+F2 = F;
+G = num;
+G = "(" T ")" >> T;
+
+
