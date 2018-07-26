@@ -6,6 +6,8 @@
 typedef struct handle Handle;
 typedef struct node Node;
 
+#define MAXSTACK 256
+
 
 enum type{
     null, expr, fexpr, str, id, num,
@@ -45,6 +47,13 @@ Handle eat_spaces(const char *string, Handle h);
 Handle parse_id(const char *string, Handle h);
 Handle parse_num(const char *string, Handle h);
 
+void next_symbol(Symbol *stack, uint8_t *p,  char c){
+    (*p)++;
+    stack[*p] = c;
+    printf("stack:%c\n", stack[*p]);
+}
+
+
 
 uint8_t str_eq(const char *stringA, const char *stringB, uint8_t count){
     uint8_t i = 1;
@@ -62,7 +71,6 @@ Handle eat_spaces(const char *string, Handle h){
     while (string[h.p] == ' ' || string[h.p] == '\n') h.p++;
     return h;
 }
-
 
 
 Handle parse_id(const char *string, Handle h){
@@ -245,3 +253,4 @@ int main(){
     }
     return 0;
 }
+

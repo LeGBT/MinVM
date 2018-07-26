@@ -18,11 +18,11 @@ parser: parser.c
 	clang -O3 $(warnings) -o parser parser.c
 
 
-test0.bc: test0.ir irc
-	irc test0.ir
+test0.bc: irc test0.ir
+	./irc test0.ir
 
 test: vm test0.bc
-	vm test0.bc
+	./vm test0.bc
 
 
 clean:

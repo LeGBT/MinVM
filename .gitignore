@@ -1,4 +1,6 @@
 vm
 irc
 astc
+*.bc
 parser
+__*
