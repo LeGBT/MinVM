@@ -1,10 +1,9 @@
-init:   PUSH 93
+init:   PUSH 90
         STORE i
         POP
 start:  PUSH 1
         STORE a
         PUSH 0
-        JUMP loop
 loop:   ADD
         STORE b
         LOAD a

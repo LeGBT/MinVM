@@ -11,9 +11,6 @@ vm: vm2.c
 irc: irc.c
 	clang -O3 $(warnings) -o irc irc.c
 
-astc: astc.c
-	clang -O3 $(warnings) -o astc astc.c
-
 parser: parser.c
 	clang -O3 $(warnings) -o parser parser.c
 
